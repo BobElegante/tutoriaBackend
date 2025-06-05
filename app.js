@@ -1,58 +1,57 @@
-
+// app.js
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const multer = require('multer'); // Importar multer
+const multer = require('multer');
 
+// Carga las variables de entorno desde el .env que estará en el WORKDIR del contenedor
+// Elimina la ruta absoluta, dotenv lo buscará en el directorio actual por defecto.
+dotenv.config();
 
-// Configuración de multer para almacenar archivos
+// Configure storage for Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Carpeta donde se guardarán las imágenes
+    // Asegúrate de que este directorio 'uploads/' exista en el contenedor
+    // Puedes crear un volumen para persistencia si lo necesitas.
+    cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname); // Nombre único para el archivo
+    cb(null, Date.now() + '-' + file.originalname);
   }
 });
 
-// Crear instancia de Express
+// Create Express app instance
 const app = express();
 
+// Initialize Multer with the storage configuration
 const upload = multer({ storage: storage });
 
-
-
-// Cargar variables de entorno ANTES de importar otros módulos
-dotenv.config({ path:'/home/montiel/Escritorio/Backend/.env'});
-
-// Importar otros módulos después de cargar las variables de entorno
+// Import routes AFTER dotenv.config()
+const userRoutes = require('./routes/users.routes');
 const dropoutRoutes = require('./routes/dropout.routes');
 const authRoutes = require('./routes/auth.routes');
 const studentRoutes = require('./routes/student.routes');
 const adminRoutes = require('./routes/admin.routes');
-const profileRoutes = require('./routes/profile.routes');
-// Middleware para procesar archivos en la ruta del expediente
-app.use('/api/student/profile', upload.single('foto'));
-
-
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+// Sirve archivos estáticos desde 'uploads'. Si usas un volumen para uploads, esto seguirá funcionando.
+app.use('/uploads', express.static('uploads'));
 
 // Rutas
-app.use('/api/admin', dropoutRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/admin', dropoutRoutes); // Si dropoutRoutes contiene rutas de admin, este prefijo está bien
 app.use('/api/student', studentRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/student', profileRoutes);
-
+app.use('/api/admin', adminRoutes); // Rutas de admin específicas
 
 // Puerto del servidor
-const PORT = process.env.PORT || 3001; 
-// Iniciar el servido
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+const PORT = process.env.PORT || 3001; // Usa el puerto de .env o 3001
+
+// Iniciar el servidor
+app.listen(PORT, '0.0.0.0', () => { // ¡Esto está perfecto para Docker!
+  console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
 
 module.exports = app;

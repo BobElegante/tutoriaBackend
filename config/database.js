@@ -1,9 +1,9 @@
 // src/config/database.js
-require('dotenv').config(); // Forzar la carga del archivo .env
+// require('dotenv').config(); // Ya se carga en app.js o se pasan por Docker Compose. Puedes comentarlo si no lo necesitas aquí.
 
 const { Pool } = require('pg');
 
-// Imprime las variables de entorno para depurar
+// Imprime las variables de entorno para depurar (opcional, considera eliminar en prod)
 console.log('Variables de entorno en database.js:', {
   DB_USER: process.env.DB_USER,
   DB_HOST: process.env.DB_HOST,
@@ -15,10 +15,10 @@ console.log('Variables de entorno en database.js:', {
 // Crear el pool de conexiones
 const pool = new Pool({
   user: process.env.DB_USER,
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST, // ¡Aquí estará el nombre del servicio de DB en Docker Compose!
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  port: process.env.DB_PORT, // Se espera que sea un número, dotenv lo leerá como string. Asegúrate que es '5432'
 });
 
 // Probar la conexión

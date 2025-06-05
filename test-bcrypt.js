@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 (async () => {
   try {
-    const password = '78'; // Contraseña original
+    const password = 'ContraseñaAdministradora'; // Contraseña original
     const hashedPassword = await bcrypt.hash(password, 10); // Generar hash
     console.log('Contraseña encriptada:', hashedPassword);
 

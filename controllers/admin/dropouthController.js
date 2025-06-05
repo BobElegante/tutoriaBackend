@@ -38,19 +38,25 @@ exports.getAllDropouts = async (req, res) => {
   }
 };
 
-exports.getDropoutByUserId = async (req, res) => {
+exports.getDropoutByControlNumber = async (req, res) => { // Renamed for clarity
   try {
-    const { userId } = req.params;
+    const { controlNumber } = req.params; // Get controlNumber from URL parameter
 
-    // Obtener las bajas del usuario
-    const dropouts = await Dropout.getByUserId(userId);
-    if (!dropouts.length) {
-      return res.status(404).json({ message: 'No se encontraron bajas para este usuario' });
+    // 1. Find user by control number to get their ID
+    const user = await User.findByControlNumber(controlNumber);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado con ese número de control.' });
+    }
+
+    // 2. Get dropouts for that user ID
+    const dropouts = await Dropout.getByUserId(user.id); // Assuming getByUserId expects user.id
+    if (!dropouts || dropouts.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron bajas para este usuario.' });
     }
 
     res.status(200).json({ dropouts });
   } catch (error) {
-    console.error('Error al obtener bajas por usuario:', error);
-    res.status(500).json({ message: 'Error al obtener bajas por usuario', error });
+    console.error('Error al obtener bajas por número de control:', error);
+    res.status(500).json({ message: 'Error al obtener bajas por número de control', error: error.message });
   }
 };

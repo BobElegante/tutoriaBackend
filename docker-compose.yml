@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: tutorias
+      POSTGRES_USER: coding_cow
+      POSTGRES_PASSWORD: 25618
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+    healthcheck: # Este bloque sí es correcto como está
+      test: ["CMD-SHELL", "pg_isready -U coding_cow -d tutorias"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      DB_USER: coding_cow
+      DB_HOST: db
+      DB_NAME: tutorias
+      DB_PASSWORD: 25618
+      DB_PORT: 5432
+      JWT_SECRET: your_jwt_secret # ¡Asegúrate de cambiar esto!
+      PORT: 3001
+      NODE_ENV: development
+    # **** ¡¡¡LA ÚNICA SECCIÓN QUE CAMBIA ES ESTA!!! ****
+    depends_on:
+      - db # <--- NOTA: Aquí 'db' es un elemento de una lista (array)
+    healthcheck: # Añadimos un healthcheck también al backend
+      test: ["CMD-SHELL", "curl -f http://localhost:3001/api/auth/health || exit 1"] # Asume una ruta de salud
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # **************************************************
+    networks:
+      - app_network
+
+volumes:
+  pgdata:
+networks:
+  app_network:
+    driver: bridge

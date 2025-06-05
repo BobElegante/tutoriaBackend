@@ -1,16 +1,21 @@
-// src/routes/student.routes.js
+// src/routes/student.routes.js (Consolidated)
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleweares/authMiddleweare');
-// Importa el controlador
-const studentController = require('../controllers/student/profileController');
+const profileController = require('../controllers/student/profileController');
 
-console.log('Controlador cargado:', studentController);
+// For file uploads, you need to configure 'multer'.
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Files will be saved in the 'uploads' folder
 
-// Ruta para crear un expediente (solo estudiantes autenticados)
-router.post('/profile', [authMiddleware], studentController.createProfile);
+// All student routes require authentication
+router.use(authMiddleware);
 
-// Ruta para obtener el expediente de un estudiante (solo estudiantes autenticados)
-router.get('/profile', [authMiddleware], studentController.getProfile);
+// Ruta para crear un expediente (protegida y maneja subida de archivo)
+// 'upload.single('foto')' is the multer middleware. 'foto' must be the name of the field in the form-data.
+router.post('/profile', upload.single('foto'), profileController.createProfile);
+
+// Ruta para obtener el expediente del estudiante (protegida)
+router.get('/profile', profileController.getProfile);
 
 module.exports = router;

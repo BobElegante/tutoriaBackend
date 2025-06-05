@@ -10,14 +10,10 @@ const User = require('../models/User');
 router.get('/check-control-number/:controlNumber', async (req, res) => {
     try {
       const { controlNumber } = req.params;
-  
-      // Buscar usuario por número de control
-      const user = await User.findByControlNumber(controlNumber)
-  
+      const user = await User.findByControlNumber(controlNumber); // Make sure this works
       if (user) {
         return res.status(200).json({ message: 'El número de control ya está registrado', user });
-      }
-  
+      } 
       res.status(200).json({ message: 'El número de control está disponible' });
     } catch (error) {
       console.error('Error al buscar usuario por número de control:', error);
@@ -26,7 +22,7 @@ router.get('/check-control-number/:controlNumber', async (req, res) => {
   });
   
 // Eliminar usuario
-router.delete('/delete', authMiddleware, deleteUserController.deleteUser);
+//router.delete('/delete', authMiddleware, deleteUserController.deleteUser);
 
 // Ruta para registro
 router.post('/register', authController.register);
