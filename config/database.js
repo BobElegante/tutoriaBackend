@@ -14,17 +14,23 @@ console.log('Variables de entorno en database.js:', {
 });
 
 // Crear el pool de conexiones
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: { rejectUnauthorized: false },
+//   family: 4, // <- fuerza IPv4
+//   user: process.env.DB_USER,
+//   host: process.env.DB_HOST, // ¡Aquí estará el nombre del servicio de DB en Docker Compose!
+//   database: process.env.DB_NAME,
+//   password: process.env.DB_PASSWORD,
+//   port: process.env.DB_PORT, // Se espera que sea un número, dotenv lo leerá como string. Asegúrate que es '5432'
+//   url: process.env.DATABASE_URL,
+// });
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-  family: 4, // <- fuerza IPv4
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST, // ¡Aquí estará el nombre del servicio de DB en Docker Compose!
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT, // Se espera que sea un número, dotenv lo leerá como string. Asegúrate que es '5432'
-  url: process.env.DATABASE_URL,
+  family: 4
 });
+
 
 // Probar la conexión
 pool.connect((err, client, release) => {
