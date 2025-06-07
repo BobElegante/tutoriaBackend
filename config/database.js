@@ -10,6 +10,7 @@ console.log('Variables de entorno en database.js:', {
   DB_NAME: process.env.DB_NAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_PORT: process.env.DB_PORT,
+  DATABASE_URL: process.env.DATABASE_URL,
 });
 
 // Crear el pool de conexiones
@@ -19,6 +20,7 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT, // Se espera que sea un número, dotenv lo leerá como string. Asegúrate que es '5432'
+  url: process.env.DATABASE_URL,
 });
 
 // Probar la conexión
