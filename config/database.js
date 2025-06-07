@@ -17,7 +17,7 @@ console.log('Variables de entorno en database.js:', {
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-  family: 4 // <- fuerza IPv4
+  family: 4, // <- fuerza IPv4
   user: process.env.DB_USER,
   host: process.env.DB_HOST, // ¡Aquí estará el nombre del servicio de DB en Docker Compose!
   database: process.env.DB_NAME,
